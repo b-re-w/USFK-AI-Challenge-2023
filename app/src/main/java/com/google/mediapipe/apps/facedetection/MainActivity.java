@@ -28,7 +28,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.exifinterface.media.ExifInterface;
 // ContentResolver dependency
-import com.google.mediapipe.apps.R;
+import com.example.usfk.ai.challenge.R;
 import com.google.mediapipe.solutioncore.CameraInput;
 import com.google.mediapipe.solutioncore.SolutionGlSurfaceView;
 import com.google.mediapipe.solutioncore.VideoInput;

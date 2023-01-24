@@ -26,7 +26,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
-import com.google.mediapipe.apps.R;
+import com.example.usfk.ai.challenge.R;
 import com.google.mediapipe.components.CameraHelper;
 import com.google.mediapipe.components.CameraXPreviewHelper;
 import com.google.mediapipe.components.ExternalTextureConverter;
@@ -34,9 +34,10 @@ import com.google.mediapipe.components.FrameProcessor;
 import com.google.mediapipe.components.PermissionHelper;
 import com.google.mediapipe.framework.AndroidAssetUtil;
 import com.google.mediapipe.glutil.EglManager;
+import com.example.usfk.ai.challenge.databinding.ActivityMainBinding;
 
 /** Main activity of MediaPipe basic app. */
-public class MainActivity extends AppCompatActivity {
+public class BasicActivity extends AppCompatActivity {
   private static final String TAG = "MainActivity";
 
   // Flips the camera-preview frames vertically by default, before sending them into FrameProcessor

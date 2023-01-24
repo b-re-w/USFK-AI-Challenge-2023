@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.mediapipe.apps">
+    package="com.example.usfk.ai.challenge">
 
   <!-- For loading images from gallery -->
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,13 +14,12 @@
   <application
       android:allowBackup="true"
       android:icon="@mipmap/ic_launcher"
-      android:label="MediaPipe"
+      android:label="USFK AI"
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
-    <activity android:name=".posetrackinggpu.MainActivity"
-              android:label="Pose Tracking"
-              android:screenOrientation="portrait"
+    <activity android:name=".posetrackinggpu.WorkOutActivity"
+              android:screenOrientation="fullSensor"
               android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
