@@ -5,24 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+            android:layout_width="0dp"
+            android:layout_height="200dp" android:id="@+id/pose_text"
+            android:text="Pose Information"
+            android:gravity="center|center_vertical" android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:textSize="7.3sp"/>
     <FrameLayout
             android:id="@+id/preview_display_layout"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/textView">
+            app:layout_constraintEnd_toEndOf="parent" app:layout_constraintBottom_toTopOf="@+id/pose_text">
         <TextView
                 android:id="@+id/no_camera_access_view"
                 android:layout_height="fill_parent"
                 android:layout_width="fill_parent"
                 android:gravity="center"
                 android:text="@string/no_camera_access"/>
+        <Button
+                android:text="Cam Flip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/flip_button" android:visibility="visible"
+                android:layout_gravity="bottom|end" android:layout_margin="4.dp"
+                android:backgroundTintMode="src_in" android:backgroundTint="#CDDC39"/>
     </FrameLayout>
-    <TextView
-            android:layout_width="0dp"
-            android:layout_height="80dp" android:id="@+id/textView"
-            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:hint="Pose Information" android:padding="5.dp"
-            android:gravity="center|center_vertical"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

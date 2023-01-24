@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Size;
@@ -170,18 +171,21 @@ public class BasicActivity extends AppCompatActivity {
   }
 
   public void startCamera() {
+    startCamera(applicationInfo.metaData.getBoolean("cameraFacingFront", false));
+  }
+
+  private Boolean usesFrontCamera = false;
+  public Boolean isCurrentCameraFacingFront() {
+    return usesFrontCamera;
+  }
+
+  public void startCamera(@NonNull Boolean useFrontCamera) {
+    usesFrontCamera = useFrontCamera;
     cameraHelper = new CameraXPreviewHelper();
     previewFrameTexture = converter.getSurfaceTexture();
-    cameraHelper.setOnCameraStartedListener(
-        surfaceTexture -> {
-          onCameraStarted(surfaceTexture);
-        });
-    CameraHelper.CameraFacing cameraFacing =
-        applicationInfo.metaData.getBoolean("cameraFacingFront", false)
-            ? CameraHelper.CameraFacing.FRONT
-            : CameraHelper.CameraFacing.BACK;
-    cameraHelper.startCamera(
-        this, cameraFacing, previewFrameTexture, cameraTargetResolution());
+    cameraHelper.setOnCameraStartedListener(this::onCameraStarted);
+    CameraHelper.CameraFacing cameraFacing = useFrontCamera ? CameraHelper.CameraFacing.FRONT : CameraHelper.CameraFacing.BACK;
+    cameraHelper.startCamera(this, cameraFacing, previewFrameTexture, cameraTargetResolution());
   }
 
   protected Size computeViewSize(int width, int height) {

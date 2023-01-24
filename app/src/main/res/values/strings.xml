@@ -4,4 +4,5 @@
     <string name="start_camera" translatable="false">Start Camera</string>
     <string name="instruction" translatable="false">Please press any button above to start</string>
     <string name="no_camera_access" translatable="false">Please grant camera permissions.</string>
+    <string name="pose_information">Pose Information</string>
 </resources>

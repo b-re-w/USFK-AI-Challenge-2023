@@ -18,10 +18,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.TextView
 import androidx.core.view.WindowCompat
 import com.example.usfk.ai.challenge.R
 import com.google.mediapipe.apps.basic.BasicActivity
+import com.google.mediapipe.components.PermissionHelper
 import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmarkList
 import com.google.mediapipe.framework.Packet
 import com.google.mediapipe.framework.PacketGetter
@@ -44,23 +46,22 @@ class WorkOutActivity : BasicActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         setStatusBarTransparent()
         super.onCreate(savedInstanceState)
-        poseTextView = findViewById(R.id.textView)
+        poseTextView = findViewById(R.id.pose_text)
+        findViewById<Button>(R.id.flip_button)?.setOnClickListener { flipCamera() }
 
         // To show verbose logging, run:
         // adb shell setprop log.tag.MainActivity VERBOSE
-        if (Log.isLoggable(TAG, Log.VERBOSE)) {
-            processor.addPacketCallback(OUTPUT_LANDMARKS_STREAM_NAME) { packet: Packet ->
-                Log.v(TAG, "Received pose landmarks packet.")
-                try {
-                    val landmarksRaw = PacketGetter.getProtoBytes(packet)
-                    val poseLandmarks = NormalizedLandmarkList.parseFrom(landmarksRaw)
-                    val logs = getPoseLandmarksDebugString(poseLandmarks)
-                    poseTextView.text = logs
-                    //Toast.makeText(this, logs, Toast.LENGTH_SHORT).show();
-                    Log.v(TAG, "[TS:" + packet.timestamp + "] " + logs)
-                } catch (exception: InvalidProtocolBufferException) {
-                    Log.e(TAG, "Failed to get proto.", exception)
-                }
+        processor.addPacketCallback(OUTPUT_LANDMARKS_STREAM_NAME) { packet: Packet ->
+            if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "Received pose landmarks packet.")
+            try {
+                val landmarksRaw = PacketGetter.getProtoBytes(packet)
+                val poseLandmarks = NormalizedLandmarkList.parseFrom(landmarksRaw)
+                var logs = getPoseLandmarksDebugString(poseLandmarks)
+                poseTextView.text = logs.replace("\n\n", " ")
+                logs = logs.replace("\n\n", "\n")
+                if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "[TS:" + packet.timestamp + "] " + logs)
+            } catch (exception: InvalidProtocolBufferException) {
+                Log.e(TAG, "Failed to get proto.", exception)
             }
         }
     }
@@ -70,8 +71,7 @@ class WorkOutActivity : BasicActivity() {
                 Pose landmarks: ${poseLandmarks.landmarkCount}
                 
                 """.trimIndent()
-        var landmarkIndex = 0
-        for (landmark in poseLandmarks.landmarkList) {
+        for ((landmarkIndex, landmark) in poseLandmarks.landmarkList.withIndex()) {
             poseLandmarkStr += ("\tLandmark ["
                     + landmarkIndex
                     + "]: ("
@@ -80,10 +80,15 @@ class WorkOutActivity : BasicActivity() {
                     + landmark.y
                     + ", "
                     + landmark.z
-                    + ")\n")
-            ++landmarkIndex
+                    + if (landmarkIndex % 2 == 0) ")\n\n" else ")\n")
         }
         return poseLandmarkStr
+    }
+
+    fun flipCamera() {
+        if (PermissionHelper.cameraPermissionsGranted(this)) {
+            startCamera(!isCurrentCameraFacingFront)
+        }
     }
 
     fun setStatusBarTransparent() {

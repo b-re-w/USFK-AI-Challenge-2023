@@ -27,7 +27,7 @@
       </intent-filter>
     </activity>
 
-    <meta-data android:name="cameraFacingFront" android:value="True"/>
+    <meta-data android:name="cameraFacingFront" android:value="False"/>
     <meta-data android:name="binaryGraphName" android:value="pose_tracking_gpu.binarypb"/>
     <meta-data android:name="inputVideoStreamName" android:value="input_video"/>
     <meta-data android:name="outputVideoStreamName" android:value="output_video"/>
