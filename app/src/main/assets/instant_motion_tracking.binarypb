@@ -1,0 +1,6 @@
+
+¸StickerManagerCalculatorPROTO:sticker_proto_string"ANCHORS:initial_anchor_data"!USER_ROTATIONS:user_rotation_data"USER_SCALINGS:user_scaling_data"RENDER_DATA:sticker_render_data
+€RegionTrackingSubgraphVIDEO:input_videoSENTINEL:sticker_sentinelANCHORS:initial_anchor_data"ANCHORS:tracked_anchor_data
+ÎMatricesManagerCalculatorANCHORS:tracked_anchor_data IMU_ROTATION:imu_rotation_matrix!USER_ROTATIONS:user_rotation_dataUSER_SCALINGS:user_scaling_dataRENDER_DATA:sticker_render_data!GIF_ASPECT_RATIO:gif_aspect_ratio"MATRICES:0:gif_matrices"MATRICES:1:asset_3d_matrices*FOV:vertical_fov_radians*ASPECT_RATIO:aspect_ratio
+—GlAnimationOverlayCalculatorVIDEO:input_videoMODEL_MATRICES:gif_matricesTEXTURE:gif_texture"asset_gif_rendered*ANIMATION_ASSET:gif_asset_name
+–GlAnimationOverlayCalculatorVIDEO:asset_gif_rendered MODEL_MATRICES:asset_3d_matrices"output_video*TEXTURE:texture_3d*ANIMATION_ASSET:asset_3dRinput_videoRsticker_sentinelRsticker_proto_stringRimu_rotation_matrixRgif_textureRgif_aspect_ratiozoutput_video
