@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
+import androidx.camera.core.ImageAnalysis.Analyzer
 import androidx.core.view.WindowCompat
 import com.example.usfk.ai.challenge.R
 import com.google.mediapipe.apps.basic.BasicActivity
@@ -42,6 +43,10 @@ class WorkOutActivity : BasicActivity() {
     }
 
     private lateinit var poseTextView: TextView
+    private lateinit var poseAnalyzer: Pose
+    private val recipeMap = ArmAnglesRecipe.toMap() + LegAnglesRecipe.toMap() + BodyAnglesRecipe.toMap()
+    private val recipeList = recipeMap.toList().map { it.second }
+    private val recipeName = recipeMap.toList().map { it.first }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setStatusBarTransparent()
@@ -56,10 +61,19 @@ class WorkOutActivity : BasicActivity() {
             try {
                 val landmarksRaw = PacketGetter.getProtoBytes(packet)
                 val poseLandmarks = NormalizedLandmarkList.parseFrom(landmarksRaw)
-                var logs = getPoseLandmarksDebugString(poseLandmarks)
-                poseTextView.text = logs.replace("\n\n", " ")
-                logs = logs.replace("\n\n", "\n")
-                if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "[TS:" + packet.timestamp + "] " + logs)
+                //var logs = getPoseLandmarksDebugString(poseLandmarks)
+                if (!::poseAnalyzer.isInitialized) {
+                    poseAnalyzer = Pose(poseLandmarks)
+                } else {
+                    poseAnalyzer.setData(poseLandmarks)
+                }
+                val anal = poseAnalyzer.getAngleList(recipeList)
+                poseTextView.text = anal.mapIndexed { index, value ->
+                    "${recipeName[index]}:  ${"%.2f".format(value)}${if (index % 2 == 0 && index < 8) "   |   " else "\n"}"
+                }.joinToString("")
+                //poseTextView.text = logs.replace("\n\n", " ")
+                //logs = logs.replace("\n\n", "\n")
+                //if (Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "[TS:" + packet.timestamp + "] " + logs)
             } catch (exception: InvalidProtocolBufferException) {
                 Log.e(TAG, "Failed to get proto.", exception)
             }

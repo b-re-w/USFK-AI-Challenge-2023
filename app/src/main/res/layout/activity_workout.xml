@@ -7,11 +7,11 @@
 
     <TextView
             android:layout_width="0dp"
-            android:layout_height="200dp" android:id="@+id/pose_text"
+            android:layout_height="180dp" android:id="@+id/pose_text"
             android:text="Pose Information"
             android:gravity="center|center_vertical" android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" android:textSize="7.3sp"/>
+            app:layout_constraintEnd_toEndOf="parent" android:textSize="18sp"/>
     <FrameLayout
             android:id="@+id/preview_display_layout"
             android:layout_width="0dp"
