@@ -17,6 +17,7 @@ package com.example.usfk.ai.challenge.posetrackinggpu
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.TextView
@@ -28,6 +29,8 @@ import com.google.mediapipe.formats.proto.LandmarkProto.NormalizedLandmarkList
 import com.google.mediapipe.framework.Packet
 import com.google.mediapipe.framework.PacketGetter
 import com.google.protobuf.InvalidProtocolBufferException
+import java.util.*
+import kotlin.concurrent.timer
 import kotlin.math.*
 
 /** Main activity of MediaPipe pose tracking app.  */
@@ -44,17 +47,22 @@ class WorkOutActivity : BasicActivity() {
 
     private lateinit var poseTextView: TextView
     private lateinit var startButton: Button
+    private lateinit var timerButton: Button
     private lateinit var poseAnalyzer: Pose
     private val recipeMap = ArmAnglesRecipe.toMap() + LegAnglesRecipe.toMap() + BodyAnglesRecipe.toMap()
     private val recipeList = recipeMap.toList().map { it.second }
     private val recipeName = recipeMap.toList().map { it.first }
 
     private var isWorkOutStarted = false
+    private var isTimerStarted = false
     private var count = 0
     private var squatCriteria = listOf(77.33, 112.42, 115.12)  // knee, ankle, right hip to right knee
     private var normalSituation = listOf(160.67, 150.15, 156.32)  // knee, ankle, right hip to right knee
-    private var threadsHold = 98.9
+    private var threadsHold = 93.4
     private var hitCriteria = false
+
+    private var time = 0
+    private var timerTask: Timer? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         setStatusBarTransparent()
@@ -63,6 +71,8 @@ class WorkOutActivity : BasicActivity() {
         findViewById<Button>(R.id.flip_button)?.setOnClickListener { flipCamera() }
         startButton = findViewById(R.id.squat_button)
         startButton.setOnClickListener { startSquat() }
+        timerButton = findViewById(R.id.timer_button)
+        timerButton.setOnClickListener { startTimer() }
 
         // To show verbose logging, run:
         // adb shell setprop log.tag.MainActivity VERBOSE
@@ -78,12 +88,12 @@ class WorkOutActivity : BasicActivity() {
                     poseAnalyzer.setData(poseLandmarks)
                 }
                 val anal = poseAnalyzer.getAngleList(recipeList)
+                val currentRight = listOf(anal[4], anal[6], anal[8])
+                val currentLeft = listOf(anal[5], anal[7], anal[9])
+                var rightPercent = 0.0
+                var leftPercent = 0.0
                 if (isWorkOutStarted) {
                     // Euclidean Distance (MAX Dis 623.54)
-                    val currentRight = listOf(anal[4], anal[6], anal[8])
-                    val currentLeft = listOf(anal[5], anal[7], anal[9])
-                    var rightPercent = 0.0
-                    var leftPercent = 0.0
                     if (!hitCriteria) {
                         rightPercent = getPercent(getEuclideanDistance(squatCriteria, currentRight))
                         leftPercent = getPercent(getEuclideanDistance(squatCriteria, currentLeft))
@@ -99,6 +109,17 @@ class WorkOutActivity : BasicActivity() {
                         }
                     }
                     poseTextView.text = "<Next Posture> ${if (!hitCriteria) "Squat Down" else "Squat Up"}\n(R)Posture Correspondance: ${"%.2f".format(rightPercent)}\n(L)Posture Correspondance: ${"%.2f".format(leftPercent)}\nSquat Count: $count"
+                } else if (isTimerStarted) {
+                    rightPercent = getPercent(getEuclideanDistance(squatCriteria, currentRight))
+                    leftPercent = getPercent(getEuclideanDistance(squatCriteria, currentLeft))
+                    if (rightPercent < threadsHold || leftPercent < threadsHold) {
+                        terminateTimerThread()
+                    } else {
+                        runTimerThread()
+                    }
+                    val sec = time / 100
+                    val milli = time % 100
+                    poseTextView.text = "${if (timerTask != null) "<Timer Counting...>" else "<Timer Stopped>"}\n(R)Posture Correspondance: ${"%.2f".format(rightPercent)}\n(L)Posture Correspondance: ${"%.2f".format(leftPercent)}\nTime: $sec:$milli"
                 } else {
                     poseTextView.text = anal.mapIndexed { index, value ->
                         "${recipeName[index]}:  ${"%.2f".format(value)}${if (index % 2 == 0 && index < 8) "  |  " else "\n"}"
@@ -147,10 +168,36 @@ class WorkOutActivity : BasicActivity() {
         if (isWorkOutStarted) {
             isWorkOutStarted = false
             startButton.text = "Start Squat"
+            timerButton.visibility = View.VISIBLE
         } else {
             isWorkOutStarted = true
             startButton.text = "Stop Squat"
+            timerButton.visibility = View.GONE
         }
+    }
+
+    fun startTimer() {
+        if (isTimerStarted) {
+            isTimerStarted = false
+            timerButton.text = "Start Timer"
+            startButton.visibility = View.VISIBLE
+        } else {
+            isTimerStarted = true
+            timerButton.text = "Stop Timer"
+            startButton.visibility = View.GONE
+        }
+    }
+
+    fun runTimerThread() {
+        if (timerTask != null) return
+        timerTask = timer(initialDelay = 0, period = 10) {
+            time++
+        }
+    }
+
+    fun terminateTimerThread() {
+        timerTask?.cancel()
+        timerTask = null
     }
 
     fun setStatusBarTransparent() {
