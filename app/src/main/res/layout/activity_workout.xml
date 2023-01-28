@@ -31,5 +31,11 @@
                 android:layout_height="wrap_content" android:id="@+id/flip_button" android:visibility="visible"
                 android:layout_gravity="bottom|end" android:layout_margin="4.dp"
                 android:backgroundTintMode="src_in" android:backgroundTint="#CDDC39"/>
+        <Button
+                android:text="Start Squat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/squat_button" android:visibility="visible"
+                android:layout_gravity="bottom|start" android:layout_margin="4.dp"
+                android:backgroundTintMode="src_in" android:backgroundTint="#FF5722"/>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
